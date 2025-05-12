@@ -6,7 +6,7 @@ function initializeSupabase() {
     }
     return window.supabase.createClient(
         'https://ahmyvrjeceuybacsjwbh.supabase.co',
-        'SeyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFobXl2cmplY2V1eWJhY3Nqd2JoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDcwNzAxMTYsImV4cCI6MjA2MjY0NjExNn0.38F0PRegBBX5DpCkCCsAbmQtU6lSV_mBjbXKr3vl4DM' // Substitua pela Anon public key
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFobXl2cmplY2V1eWJhY3Nqd2JoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDcwNzAxMTYsImV4cCI6MjA2MjY0NjExNn0.38F0PRegBBX5DpCkCCsAbmQtU6lSV_mBjbXKr3vl4DM' // Substitua pela Anon public key
     );
 }
 
@@ -347,6 +347,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (itemsError) {
             console.error('Error saving order items:', itemsError);
             alert('Erro ao salvar os itens do pedido. Por favor, tente novamente mais tarde.');
+próximo
             return;
         }
 
@@ -375,7 +376,7 @@ document.addEventListener('DOMContentLoaded', () => {
         updateCartDisplay();
 
         // Send WhatsApp message
-        const whatsappUrl = `https://wa.me/5511999999999?text=${encodeURIComponent(message)}`;
+        const whatsappUrl = `SEU_NUMERO_DO_WHATSAPP?text=${encodeURIComponent(message)}`;
         window.open(whatsappUrl, '_blank');
     });
 
@@ -430,7 +431,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         cartItems.innerHTML = html;
         subtotal.textContent = `R$ ${cartSubtotal.toFixed(2)}`;
-        total.textContent = `R$ ${(cartSubtotal + 15).to.Fixed(2)}`;
+        total.textContent = `R$ ${(cartSubtotal + 15).toFixed(2)}`;
 
         document.querySelectorAll('.remove-item').forEach(button => {
             button.addEventListener('click', () => {
