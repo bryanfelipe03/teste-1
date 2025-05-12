@@ -5,8 +5,8 @@ function initializeSupabase() {
         return null;
     }
     return window.supabase.createClient(
-        'https://zvbqoodldxdyayvdmqxj.supabase.co',
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp2YnFvb2RsZHhkeWF5dmRtcXhqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDcwNTA5MjksImV4cCI6MjA2MjYyNjkyOX0.35nlhD15gVwjXiWfkG-XKUdrsSnEP3iWCljGOYmJy1Y' // Substitua pela chave pública do projeto
+        'https://ahmyvrjeceuybacsjwbh.supabase.co',
+        'SeyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFobXl2cmplY2V1eWJhY3Nqd2JoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDcwNzAxMTYsImV4cCI6MjA2MjY0NjExNn0.38F0PRegBBX5DpCkCCsAbmQtU6lSV_mBjbXKr3vl4DM' // Substitua pela Anon public key
     );
 }
 
@@ -314,7 +314,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const address = document.getElementById('deliveryAddress').value;
         const payment = document.querySelector('input[name="payment"]:checked').value;
         const cartSubtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-        const cartTotal = cartSubtotal + 2;
+        const cartTotal = cartSubtotal + 15;
 
         // Save order to Supabase
         const order = {
@@ -322,15 +322,15 @@ document.addEventListener('DOMContentLoaded', () => {
             delivery_address: address,
             payment_method: payment,
             subtotal: cartSubtotal,
-            shipping: 2.00,
+            shipping: 15.00,
             total: cartTotal,
             created_at: new Date().toISOString()
         };
 
         const { data: orderData, error: orderError } = await supabase.from('orders').insert([order]).select().single();
         if (orderError) {
-            console.error('Error saving order:', orderError);
-            alert('Erro ao salvar pedido: ' + orderError.message);
+            console.error('Error saving order:', orderError, 'Order data:', order);
+            alert('Erro ao salvar o pedido. Por favor, tente novamente mais tarde.');
             return;
         }
 
@@ -346,7 +346,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const { error: itemsError } = await supabase.from('order_items').insert(orderItems);
         if (itemsError) {
             console.error('Error saving order items:', itemsError);
-            alert('Erro ao salvar itens do pedido: ' + itemsError.message);
+            alert('Erro ao salvar os itens do pedido. Por favor, tente novamente mais tarde.');
             return;
         }
 
@@ -403,7 +403,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (cart.length === 0) {
             cartItems.innerHTML = '<p class="text-center text-gray-500 py-8">Seu carrinho está vazio</p>';
             subtotal.textContent = 'R$ 0,00';
-            total.textContent = 'R$ 2,00';
+            total.textContent = 'R$ 15,00';
             return;
         }
 
@@ -430,7 +430,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         cartItems.innerHTML = html;
         subtotal.textContent = `R$ ${cartSubtotal.toFixed(2)}`;
-        total.textContent = `R$ ${(cartSubtotal + 15).toFixed(2)}`;
+        total.textContent = `R$ ${(cartSubtotal + 15).to.Fixed(2)}`;
 
         document.querySelectorAll('.remove-item').forEach(button => {
             button.addEventListener('click', () => {
