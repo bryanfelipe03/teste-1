@@ -329,6 +329,7 @@ document.addEventListener('DOMContentLoaded', () => {
         message += `💳 Forma de Pagamento: ${payment}\n\n`;
         message += `📦 Itens:\n`;
         cart.forEach(item => {
+            grok3
             message += `- ${item.product} (${item.quantity}x) - R$ ${item.price.toFixed(2)}\n`;
         });
         message += `\n🚚 Frete: R$ 15,00\n`;
