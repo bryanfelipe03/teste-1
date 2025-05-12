@@ -4,8 +4,8 @@ function initializeSupabase() {
         return null;
     }
     return window.supabase.createClient(
-        'https://ahmyvrjeceuybacsjwbh.supabase.co',
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFobXl2cmplY2V1eWJhY3Nqd2JoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDcwNzAxMTYsImV4cCI6MjA2MjY0NjExNn0.38F0PRegBBX5DpCkCCsAbmQtU6lSV_mBjbXKr3vl4DM'
+        'https://klngnfplterelcbeagpq.supabase.co',
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtsbmduZnBsdGVyZWxjYmVhZ3BxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDcwODI3MjcsImV4cCI6MjA2MjY1ODcyN30.QlZFVSZtH3wGipvbu591us9mF06anCLfmj4p9O7sWMM'
     );
 }
 
