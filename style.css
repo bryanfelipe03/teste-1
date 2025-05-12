@@ -1,0 +1,64 @@
+body {
+    font-family: 'Montserrat', sans-serif;
+}
+
+.title-font {
+    font-family: 'Playfair Display', serif;
+}
+
+.pulse {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7); }
+    70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(220, 38, 38, 0); }
+    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); }
+}
+
+.admin-panel {
+    transition: all 0.3s ease;
+}
+
+.admin-panel:hover {
+    background-color: rgba(107, 33, 168, 0.8) !important;
+}
+
+.product-card {
+    transition: all 0.3s ease;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Ajustes para modais em telas pequenas */
+@media (max-width: 640px) {
+    #cartModal .max-w-md {
+        max-width: 100%;
+    }
+
+    #cartModal .p-4 {
+        padding: 1rem;
+    }
+
+    #cartModal .text-xl {
+        font-size: 1.25rem;
+    }
+
+    #cartModal .py-3 {
+        padding-top: 0.75rem;
+        padding-bottom: 0.75rem;
+    }
+
+    #adminLoginModal .max-w-md,
+    #orderConfirmation .max-w-md {
+        width: 90%;
+    }
+
+    #adminPanel {
+        width: 90%;
+        right: 5%;
+    }
+}
