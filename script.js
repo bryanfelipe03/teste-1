@@ -1,4 +1,3 @@
-// Função para inicializar o Supabase após o carregamento da biblioteca
 function initializeSupabase() {
     if (!window.supabase) {
         console.error('Supabase library not loaded');
@@ -10,7 +9,6 @@ function initializeSupabase() {
     );
 }
 
-// Aguarda o carregamento do DOM antes de inicializar
 document.addEventListener('DOMContentLoaded', () => {
     const supabase = initializeSupabase();
     if (!supabase) {
@@ -18,10 +16,8 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
-    // Shopping Cart Functionality
     let cart = JSON.parse(localStorage.getItem('cart')) || [];
 
-    // DOM Elements
     const cartBtn = document.getElementById('cartBtn');
     const cartModal = document.getElementById('cartModal');
     const closeCartBtn = document.getElementById('closeCartBtn');
@@ -48,10 +44,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const removeProductSelect = document.getElementById('removeProductSelect');
     const categoryLinks = document.querySelectorAll('.category-link');
 
-    // Admin Authentication State
     let isAdminAuthenticated = false;
 
-    // Load Products from Supabase
     async function loadProducts() {
         const { data, error } = await supabase.from('products').select('*');
         if (error) {
@@ -63,7 +57,6 @@ document.addEventListener('DOMContentLoaded', () => {
         populateRemoveProductSelect(data);
     }
 
-    // Render Products
     function renderProducts(products) {
         productsContainer.innerHTML = '';
         products.forEach(product => {
@@ -85,7 +78,6 @@ document.addEventListener('DOMContentLoaded', () => {
             productsContainer.insertAdjacentHTML('beforeend', productCard);
         });
 
-        // Re-attach event listeners for add-to-cart buttons
         document.querySelectorAll('.add-to-cart').forEach(button => {
             button.addEventListener('click', () => {
                 const productId = button.getAttribute('data-product-id');
@@ -95,12 +87,10 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
 
-        // Apply current category filter
         const activeCategory = document.querySelector('.category-link.font-bold')?.getAttribute('data-category') || 'all';
         filterProducts(activeCategory);
     }
 
-    // Populate Remove Product Select
     function populateRemoveProductSelect(products) {
         removeProductSelect.innerHTML = '<option value="" disabled selected>Selecione um produto</option>';
         products.forEach(product => {
@@ -109,7 +99,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Category Filter
     categoryLinks.forEach(link => {
         link.addEventListener('click', (e) => {
             e.preventDefault();
@@ -131,7 +120,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Admin Button Click
     adminBtn.addEventListener('click', () => {
         if (isAdminAuthenticated) {
             adminPanel.classList.toggle('hidden');
@@ -140,13 +128,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Close Admin Login Modal
     closeAdminLoginBtn.addEventListener('click', () => {
         adminLoginModal.classList.add('hidden');
         adminError.classList.add('hidden');
     });
 
-    // Admin Login Form Submission
     adminLoginForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const email = document.getElementById('adminEmail').value;
@@ -161,7 +147,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            // Verificar se é admin
             const { data: userData, error: userError } = await supabase
                 .from('users')
                 .select('role')
@@ -193,7 +178,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Add Product Form Submission
     addProductForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         if (!isAdminAuthenticated) {
@@ -208,7 +192,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const productImage = document.getElementById('productImage').files[0];
 
         try {
-            // Fazer upload da imagem para o Supabase Storage
             const fileName = `${Date.now()}_${productImage.name}`;
             const { data: uploadData, error: uploadError } = await supabase.storage
                 .from('product-images')
@@ -220,7 +203,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            // Obter a URL pública da imagem
             const { data: publicUrlData } = supabase.storage
                 .from('product-images')
                 .getPublicUrl(fileName);
@@ -231,7 +213,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            // Criar objeto do produto
             const product = {
                 name: productName,
                 description: productDescription,
@@ -240,7 +221,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 image_url: publicUrlData.publicUrl
             };
 
-            // Inserir produto no banco de dados
             const { error: insertError } = await supabase.from('products').insert([product]);
             if (insertError) {
                 console.error('Error adding product:', insertError);
@@ -257,7 +237,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Remove Product Form Submission
     removeProductForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         if (!isAdminAuthenticated) {
@@ -278,7 +257,6 @@ document.addEventListener('DOMContentLoaded', () => {
         loadProducts();
     });
 
-    // Close admin panel and modals when clicking outside
     document.addEventListener('click', (e) => {
         if (!adminBtn.contains(e.target) && !adminPanel.contains(e.target) && !adminLoginModal.contains(e.target)) {
             adminPanel.classList.add('hidden');
@@ -291,23 +269,19 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Shopping Cart Functions
     cartBtn.addEventListener('click', () => {
         cartModal.classList.remove('hidden');
         updateCartDisplay();
     });
 
-    // Close Cart Modal
     closeCartBtn.addEventListener('click', () => {
         cartModal.classList.add('hidden');
     });
 
-    // Close Confirmation Modal
     closeConfirmationBtn.addEventListener('click', () => {
         orderConfirmation.classList.add('hidden');
     });
 
-    // Checkout Form Submission
     checkoutForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const name = document.getElementById('customerName').value;
@@ -316,7 +290,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const cartSubtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
         const cartTotal = cartSubtotal + 15;
 
-        // Save order to Supabase
         const order = {
             customer_name: name,
             delivery_address: address,
@@ -334,7 +307,6 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Save order items
         const orderItems = cart.map(item => ({
             order_id: orderData.id,
             product_id: item.productId,
@@ -347,11 +319,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (itemsError) {
             console.error('Error saving order items:', itemsError);
             alert('Erro ao salvar os itens do pedido. Por favor, tente novamente mais tarde.');
-próximo
             return;
         }
 
-        // Generate WhatsApp message
         let message = `Olá Moda Elegante! 😊\n\n`;
         message += `Acabei de finalizar minha compra:\n\n`;
         message += `👤 Nome: ${name}\n`;
@@ -369,14 +339,12 @@ próximo
         cartModal.classList.add('hidden');
         orderConfirmation.classList.remove('hidden');
 
-        // Clear cart
         cart = [];
         localStorage.setItem('cart', JSON.stringify(cart));
         updateCartCount();
         updateCartDisplay();
 
-        // Send WhatsApp message
-        const whatsappUrl = `SEU_NUMERO_DO_WHATSAPP?text=${encodeURIComponent(message)}`;
+        const whatsappUrl = `https://wa.me/5511999999999?text=${encodeURIComponent(message)}`;
         window.open(whatsappUrl, '_blank');
     });
 
@@ -444,7 +412,6 @@ próximo
         });
     }
 
-    // Initialize
     loadProducts();
     updateCartCount();
     updateCartDisplay();
