@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Variedade-Store - Roupas, Perfumes e Semi Jóias</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-gray-100">
+    <!-- Admin Button -->
+    <div class="fixed bottom-4 right-4 z-50">
+        <button id="adminBtn" class="admin-panel bg-purple-900 text-white p-3 rounded-full shadow-lg hover:shadow-xl">
+            <i class="fas fa-lock"></i>
+        </button>
+    </div>
+
+    <!-- Admin Login Modal -->
+    <div id="adminLoginModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+        <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+            <h3 class="font-bold text-xl mb-4">Login Admin</h3>
+            <form id="adminLoginForm" class="space-y-4">
+                <div>
+                    <label for="adminEmail" class="block mb-1">Email</label>
+                    <input type="email" id="adminEmail" class="w-full border rounded p-2" required>
+                </div>
+                <div>
+                    <label for="adminPassword" class="block mb-1">Senha</label>
+                    <input type="password" id="adminPassword" class="w-full border rounded p-2" required>
+                </div>
+                <div id="adminError" class="text-red-600 hidden"></div>
+                <button type="submit" class="w-full bg-purple-900 text-white py-2 px-4 rounded hover:bg-purple-800">Entrar</button>
+            </form>
+            <button id="closeAdminLoginBtn" class="w-full mt-4 text-gray-500 hover:text-gray-700">Fechar</button>
+        </div>
+    </div>
+
+    <!-- Admin Panel -->
+    <div id="adminPanel" class="hidden absolute bottom-16 right-4 bg-white p-4 rounded-lg shadow-xl w-80">
+        <h3 class="font-bold text-purple-900 mb-2">Painel Admin</h3>
+        <div id="adminContent" class="hidden">
+            <!-- Add Product Form -->
+            <form id="addProductForm" class="space-y-4 mb-4" enctype="multipart/form-data">
+                <div>
+                    <label for="productName" class="block mb-1">Nome do Produto</label>
+                    <input type="text" id="productName" class="w-full border rounded p-2" required>
+                </div>
+                <div>
+                    <label for="productDescription" class="block mb-1">Descrição</label>
+                    <textarea id="productDescription" rows="3" class="w-full border rounded p-2"></textarea>
+                </div>
+                <div>
+                    <label for="productPrice" class="block mb-1">Preço (R$)</label>
+                    <input type="number" id="productPrice" step="0.01" class="w-full border rounded p-2" required>
+                </div>
+                <div>
+                    <label for="productCategory" class="block mb-1">Categoria</label>
+                    <select id="productCategory" class="w-full border rounded p-2" required>
+                        <option value="Roupas">Roupas</option>
+                        <option value="Perfumes">Perfumes</option>
+                        <option value="Semi Jóias">Semi Jóias</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="productImage" class="block mb-1">Imagem do Produto</label>
+                    <input type="file" id="productImage" accept="image/*" class="w-full border rounded p-2" required>
+                </div>
+                <button type="submit" class="w-full bg-purple-700 text-white py-2 px-3 rounded hover:bg-purple-800">Adicionar Produto</button>
+            </form>
+            <!-- Remove Product Form -->
+            <form id="removeProductForm" class="space-y-4">
+                <div>
+                    <label for="removeProductSelect" class="block mb-1">Selecionar Produto</label>
+                    <select id="removeProductSelect" class="w-full border rounded p-2" required></select>
+                </div>
+                <button type="submit" class="w-full bg-red-600 text-white py-2 px-3 rounded hover:bg-red-700">Remover Produto</button>
+            </form>
+        </div>
+        <p id="adminPrompt" class="text-gray-500">Faça login para acessar o painel.</p>
+    </div>
+
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-purple-900 via-red-700 to-black text-white py-6">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center">
+                <h1 class="title-font text-3xl md:text-4xl font-bold">Variedade-Boutique</h1>
+                <div class="flex items-center space-x-4">
+                    <button id="cartBtn" class="relative">
+                        <i class="fas fa-shopping-cart text-2xl"></i>
+                        <span id="cartCount" class="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">0</span>
+                    </button>
+                </div>
+            </div>
+            <nav class="mt-6">
+                <ul class="flex space-x-6 overflow-x-auto pb-2">
+                    <li><a href="#" class="category-link font-bold border-b-2 border-white pb-1" data-category="all">Tudo</a></li>
+                    <li><a href="#" class="category-link hover:border-b-2 hover:border-white pb-1" data-category="Roupas">Roupas</a></li>
+                    <li><a href="#" class="category-link hover:border-b-2 hover:border-white pb-1" data-category="Perfumes">Perfumes</a></li>
+                    <li><a href="#" class="category-link hover:border-b-2 hover:border-white pb-1" data-category="Semi Jóias">Semi Jóias</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Hero Section -->
+        <section class="mb-12 bg-gradient-to-r from-purple-800 to-red-700 rounded-xl p-8 text-white">
+            <div class="max-w-2xl">
+                <h2 class="title-font text-3xl md:text-4xl font-bold mb-4">Coleção Exclusiva!!</h2>
+                <p class="mb-6">Descubra peças únicas que combinam elegância e sofisticação para realçar sua beleza.</p>
+                <li><a href="#" data-category="all"><button class="bg-black text-white py-2 px-6 rounded-full font-bold hover:bg-gray-900 transition">Explorar</button></a></li>
+            </div>
+        </section>
+
+        <!-- Products Section -->
+        <section>
+            <h2 class="title-font text-2xl md:text-3xl font-bold mb-8 text-center">Nossos Produtos</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="productsContainer">
+                <!-- Products will be populated dynamically -->
+            </div>
+        </section>
+
+        <!-- Customer Reviews -->
+        <section class="mt-16">
+            <h2 class="title-font text-2xl md:text-3xl font-bold mb-8 text-center">O que nossos clientes dizem</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <div class="flex items-center mb-4">
+                        <div class="text-yellow-400 mr-2">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 mb-4">"Adorei o vestido! Chegou antes do prazo e a qualidade é excelente. Com certeza comprarei novamente."</p>
+                    <div class="flex items-center">
+                        <div class="bg-purple-100 text-purple-800 rounded-full h-10 w-10 flex items-center justify-center font-bold mr-3">A</div>
+                        <div>
+                            <h4 class="font-bold">Ana Silva</h4>
+                            <p class="text-gray-500 text-sm">Cliente desde 2022</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <div class="flex items-center mb-4">
+                        <div class="text-yellow-400 mr-2">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 mb-4">"O perfume Mystic é incrível! Recebi muitos elogios no trabalho. A entrega foi super rápida."</p>
+                    <div class="flex items-center">
+                        <div class="bg-purple-100 text-purple-800 rounded-full h-10 w-10 flex items-center justify-center font-bold mr-3">C</div>
+                        <div>
+                            <h4 class="font-bold">Carlos Mendes</h4>
+                            <p class="text-gray-500 text-sm">Cliente desde 2021</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <div class="flex items-center mb-4">
+                        <div class="text-yellow-400 mr-2">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 mb-4">"Os brincos são lindos e de ótima qualidade. Só não dei 5 estrelas porque a embalagem poderia ser melhor."</p>
+                    <div class="flex items-center">
+                        <div class="bg-purple-100 text-purple-800 rounded-full h-10 w-10 flex items-center justify-center font-bold mr-3">M</div>
+                        <div>
+                            <h4 class="font-bold">Mariana Costa</h4>
+                            <p class="text-gray-500 text-sm">Cliente desde 2023</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <div class="flex items-center mb-4">
+                        <div class="text-yellow-400 mr-2">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 mb-4">"Atendimento excelente! Me ajudaram a escolher o presente perfeito para minha esposa. Ela amou o colar!"</p>
+                    <div class="flex items-center">
+                        <div class="bg-purple-100 text-purple-800 rounded-full h-10 w-10 flex items-center justify-center font-bold mr-3">R</div>
+                        <div>
+                            <h4 class="font-bold">Ricardo Almeida</h4>
+                            <p class="text-gray-500 text-sm">Cliente desde 2020</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-12 bg-gradient-to-r from-purple-900 to-red-700 rounded-xl p-8 text-white">
+                <h3 class="title-font text-2xl font-bold mb-4">Deixe seu feedback</h3>
+                <p class="mb-6">Sua opinião é muito importante para nós. Envie uma mensagem pelo WhatsApp!</p>
+                <a href="https://wa.me/5518997894841?text=Olá%20Moda%20Elegante,%20gostaria%20de%20deixar%20meu%20feedback%20sobre..." class="bg-white text-purple-900 py-2 px-6 rounded-full font-bold hover:bg-gray-100 transition inline-flex items-center">
+                    <i class="fab fa-whatsapp mr-2 text-xl"></i> Enviar Feedback
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <!-- Shopping Cart Modal -->
+    <div id="cartModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-end">
+        <div class="bg-white w-full max-w-md h-full overflow-y-auto">
+            <div class="p-4 border-b sticky top-0 bg-white z-10">
+                <div class="flex justify-between items-center">
+                    <h3 class="font-bold text-xl">Seu Carrinho</h3>
+                    <button id="closeCartBtn" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+            <div id="cartItems" class="p-4">
+                <p class="text-center text-gray-500 py-8">Seu carrinho está vazio</p>
+            </div>
+            <div class="p-4 border-t sticky bottom-0 bg-white">
+                <div class="mb-4">
+                    <div class="flex justify-between mb-2">
+                        <span>Subtotal:</span>
+                        <span id="subtotal">R$ 0,00</span>
+                    </div>
+                    <div class="flex justify-between mb-2">
+                        <span>Frete:</span>
+                        <span id="shipping">R$ 2,00</span>
+                    </div>
+                    <div class="flex justify-between font-bold text-lg">
+                        <span>Total:</span>
+                        <span id="total">R$ 0,00</span>
+                    </div>
+                </div>
+                <form id="checkoutForm" class="space-y-4">
+                    <div>
+                        <label for="customerName" class="block mb-1">Nome Completo</label>
+                        <input type="text" id="customerName" class="w-full border rounded p-2" required>
+                    </div>
+                    <div>
+                        <label for="deliveryAddress" class="block mb-1">Endereço de Entrega</label>
+                        <textarea id="deliveryAddress" rows="3" class="w-full border rounded p-2" required></textarea>
+                    </div>
+                    <div>
+                        <label class="block mb-2">Forma de Pagamento</label>
+                        <div class="space-y-2">
+                            <label class="flex items-center">
+                                <input type="radio" name="payment" value="Cartão de Crédito" class="mr-2" checked>
+                                Cartão de Crédito
+                            </label>
+                            <label class="flex items-center">
+                                <input type="radio" name="payment" value="Pix" class="mr-2">
+                                Pix
+                            </label>
+                            <label class="flex items-center">
+                                <input type="radio" name="payment" value="Boleto Bancário" class="mr-2">
+                                Boleto Bancário
+                            </label>
+                        </div>
+                    </div>
+                    <button type="submit" class="w-full bg-red-600 text-white py-3 px-4 rounded-full font-bold hover:bg-red-700 pulse">
+                        Finalizar Compra
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Confirmation Modal -->
+    <div id="orderConfirmation" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+        <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+            <div class="text-center mb-6">
+                <i class="fas fa-check-circle text-green-500 text-5xl mb-4"></i>
+                <h3 class="font-bold text-xl mb-2">Pedido Confirmado! 🎉</h3>
+                <p id="confirmationMessage" class="text-gray-600"></p>
+            </div>
+            <button id="closeConfirmationBtn" class="w-full bg-purple-900 text-white py-2 px-4 rounded hover:bg-purple-800">
+                Fechar
+            </button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gradient-to-r from-purple-900 to-black text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="title-font text-xl font-bold mb-4">Variedade-Boutique</h3>
+                    <p class="text-gray-300">Roupas, perfumes e semi jóias para realçar sua beleza com elegância e sofisticação.</p>
+                </div>
+                <div>
+                    <h4 class="font-bold mb-4">Contato</h4>
+                    <ul class="space-y-2">
+                        <li class="flex items-center">
+                            <i class="fas fa-phone-alt mr-3 text-purple-300"></i>
+                            <span>+55 (18) 99789-4841</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-envelope mr-3 text-purple-300"></i>
+                            <span>contato@modaelegante.com</span>
+                        </li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold mb-4">Endereço</h4>
+                    <ul class="space-y-2">
+                        <li class="flex items-start">
+                            <i class="fas fa-map-marker-alt mr-3 mt-1 text-purple-300"></i>
+                            <span>Rua das Flores, 123<br>Tupi Paulista - SP<br>CEP: 17930-000</span>
+                        </li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold mb-4">Redes Sociais</h4>
+                    <div class="flex space-x-4">
+                        <a href="https://www.instagram.com/variedade_store_2019?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" class="bg-purple-800 hover:bg-purple-700 h-10 w-10 rounded-full flex items-center justify-center">
+                            <i class="fab fa-instagram" ></i>
+                        </a>
+                        <a href="#" class="bg-purple-800 hover:bg-purple-700 h-10 w-10 rounded-full flex items-center justify-center">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="https://wa.me/5518997894841" class="bg-purple-800 hover:bg-purple-700 h-10 w-10 rounded-full flex items-center justify-center">
+                            <i class="fab fa-whatsapp"></i>
+                        </a>
+                    </div>
+                    <h4 class="font-bold mt-6 mb-2">Formas de Pagamento</h4>
+                    <div class="flex flex-wrap gap-2">
+                        <i class="fab fa-cc-visa text-2xl"></i>
+                        <i class="fab fa-cc-mastercard text-2xl"></i>
+                        <i class="fab fa-cc-amex text-2xl"></i>
+                        <i class="fas fa-money-check-alt text-2xl"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-purple-800 mt-8 pt-8 text-center text-gray-300">
+                <p>© 2025 Variedade-Boutique. Todos os direitos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
