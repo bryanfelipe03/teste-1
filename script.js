@@ -304,7 +304,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const cartSubtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
         const cartTotal = cartSubtotal + 15;
 
-        let message = `Olá Moda Elegante! 😊\n\n`;
+        let message = `Olá Variedades-Boutique! 😊\n\n`;
         message += `Acabei de finalizar minha compra:\n\n`;
         message += `👤 Nome: ${name}\n`;
         message += `🏠 Endereço: ${address}\n`;
@@ -313,7 +313,7 @@ document.addEventListener('DOMContentLoaded', () => {
         cart.forEach(item => {
             message += `- ${item.product} (${item.quantity}x) - R$ ${item.price.toFixed(2)}\n`;
         });
-        message += `\n🚚 Frete: R$ 15,00\n`;
+        message += `\n🚚 Frete: R$ 2,00\n`;
         message += `💰 Total: R$ ${cartTotal.toFixed(2)}\n\n`;
         message += `Aguardando ansiosamente minha encomenda! ❤️`;
 
@@ -354,8 +354,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (cart.length === 0) {
             cartItems.innerHTML = '<p class="text-center text-gray-500 py-8">Seu carrinho está vazio</p>';
             subtotal.textContent = 'R$ 0,00';
-            total.textContent = 'R$ 15,00';
-            shipping.textContent = 'R$ 15,00';
+            total.textContent = 'R$ 2,00';
+            shipping.textContent = 'R$ 2,00';
             return;
         }
 
@@ -382,8 +382,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         cartItems.innerHTML = html;
         subtotal.textContent = `R$ ${cartSubtotal.toFixed(2)}`;
-        shipping.textContent = `R$ 15,00`;
-        total.textContent = `R$ ${(cartSubtotal + 15).toFixed(2)}`;
+        shipping.textContent = `R$ 2,00`;
+        total.textContent = `R$ ${(cartSubtotal + 2).toFixed(2)}`;
 
         document.querySelectorAll('.remove-item').forEach(button => {
             button.addEventListener('click', () => {
